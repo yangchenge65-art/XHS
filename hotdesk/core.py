@@ -14,7 +14,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 
 TZ = ZoneInfo('Asia/Shanghai')
 PLATFORMS = ('douyin', 'xiaohongshu')
-LABELS = {'douyin': '抖音', 'xiaohongshu': '小红书'}
+LABELS = {'douyin': '抖音', 'xiaohongshu': '小红书', 'news': '大众热门事件', 'openai': 'GPT-5.1'}
 
 
 class SourceError(Exception):
@@ -263,7 +263,8 @@ def export_excel(report, demo=False):
     notes = book.create_sheet('采集说明')
     for row in [('数据模式', '示例数据：仅用于体验，不是真实热点' if demo else '真实数据源；仅对已获取的数据负责'),
                 ('生成时间', report.get('generated_at', '')), ('覆盖范围', report.get('coverage', '')),
-                ('查询状态', report.get('status', '')), ('提醒', '钩子为规则模板，需人工核实，不保证留存率。')]:
+                ('整理方式', report.get('engine', '来源内容 / 本地规则')),
+                ('查询状态', report.get('status', '')), ('提醒', '钩子为创作建议，需人工核实，不保证留存率。')]:
         notes.append(row)
     for error in report.get('errors', []):
         notes.append((LABELS.get(error['platform'], error['platform']), error['message']))

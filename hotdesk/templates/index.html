@@ -4,6 +4,7 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>热点素材台 · 每天一个好开头</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='account.css') }}">
   <script defer src="{{ url_for('static', filename='app.js') }}"></script>
 </head>
 <body>
@@ -13,7 +14,7 @@
   <nav aria-label="主导航">
     <button class="nav-item active" data-view="daily"><span>◈</span> 每日热点 <b>01</b></button>
     <button class="nav-item" data-view="search"><span>⌕</span> 关键词探索 <b>02</b></button>
-    <button class="nav-item" data-view="settings"><span>⚙</span> 数据与预算 <b>03</b></button>
+    <button class="nav-item" data-view="settings"><span>⚙</span> 账户与预算 <b>03</b></button>
   </nav>
   <div class="sidebar-note"><span class="live-dot"></span> 为下一个好开头做准备<p>发现话题，留下线索。<br>把热点变成你的创作素材。</p></div>
   <div class="budget-box"><div>本月接口预留 <strong id="budget-text">¥0 / 30</strong></div><progress id="budget" value="0" max="30"></progress><small>本地额度 · 非供应商账单</small></div>
@@ -25,16 +26,41 @@
     <div class="eyebrow">YOUR DAILY CREATIVE SIGNAL</div>
     <div class="page-heading"><div><h1 id="page-title">捕捉热点，找到好开头<span>。</span></h1><p id="page-subtitle">从热榜到创作灵感，把值得关注的话题留在这里。</p></div><label class="mode-switch"><input type="checkbox" id="demo-toggle"><span>体验示例数据</span></label></div>
     <div id="demo-banner" class="demo-banner" hidden>示例体验模式 · 所有话题均为虚构演示，链接仅为搜索入口，不能作为真实选题依据。</div>
-    <section class="stats" aria-label="素材概览"><article><span>素材线索</span><strong id="stat-total">0<small>条</small></strong><p>当前结果中的热点与相关内容</p></article><article><span>持续出现</span><strong id="stat-repeat">0<small>条</small></strong><p>近七天至少有两天榜单记录</p></article><article><span>关注平台</span><strong>02<small>个</small></strong><p><i class="platform-mini dy">抖</i> 抖音 <i class="platform-mini xhs">红</i> 小红书</p></article><article><span>每日采集计划</span><strong class="time-stat">09:00</strong><p>北京时间 · 需服务持续运行</p></article></section>
+    <section class="stats" aria-label="素材概览"><article><span>当前素材</span><strong id="stat-total">0<small>条</small></strong><p id="stat-description">每日最多 9 条，缺少依据不凑数</p></article><article><span>抖音 / 小红书 / 大众</span><strong class="quota-stat">4 / 3 / 2</strong><p>固定每日配额，不满意单条替换</p></article><article><span>联网整理方式</span><strong id="stat-model" class="model-stat">Codex</strong><p id="model-description">ChatGPT 订阅 · 默认可用模型</p></article><article><span>每日生成计划</span><strong class="time-stat">09:00</strong><p>北京时间 · 需电脑及程序运行</p></article></section>
     <section id="search-panel" class="search-panel" hidden><div><h2>从一个关键词开始</h2><p>查看最近七天相关内容；不将搜索结果冒充历史热搜。</p></div><form id="search-form"><label class="sr-only" for="keyword">关键词</label><input id="keyword" placeholder="输入关键词，例如：肖战、KPL" maxlength="80" required><button class="primary" id="search-button" type="submit">⌕ 探索近七天</button></form><div class="suggestions">试试 <button data-keyword="肖战">肖战</button><button data-keyword="KPL">KPL</button><span>相同关键词缓存 6 小时，减少重复请求</span></div></section>
-    <section id="settings-panel" class="settings-panel" hidden><h2>数据接入与预算</h2><p>先体验整理流程，接入后再验证真实内容。密钥通过服务器环境变量配置，不在网页保存。</p><div id="source-details"></div><div class="settings-note"><strong>预算上限 ¥30 / 月</strong><p>每次请求先按配置的人民币费用上界预留额度，不自动购买、不自动充值。供应商可能按美元或其他规则收费，请同时在供应商处设置消费限额。真实接入和报价尚未验证。</p><p>关键词搜索仅请求第一页；历史热搜仅来自实际保存过的榜单。小红书榜单需另配经过验证的数据源。</p></div></section>
+    <section id="settings-panel" class="settings-panel" hidden>
+      <h2>连接账户，开始每日精选</h2>
+      <p>优先使用 ChatGPT 订阅登录官方 Codex，由本机程序搜找并整理。无需在这里输入 ChatGPT 或社交账户密码。</p>
+      <label class="engine-picker">调用方式<select id="engine-select"><option value="codex">ChatGPT 订阅 · 本机 Codex（推荐）</option><option value="openai">OpenAI API · GPT-5.1（单独计费）</option></select></label>
+      <div id="codex-panel" class="subscription-panel">
+        <p id="subscription-state" class="connection-state">正在检查本机登录状态…</p>
+        <div class="account-actions"><button type="button" id="connect-codex" class="primary">连接 ChatGPT 订阅</button><button type="button" id="check-codex" class="secondary">检查订阅登录</button><button type="button" id="refresh-account" class="secondary">已登录，刷新状态</button></div>
+        <p>首次会安装官方 Codex，必要时安装 Node.js，再打开官方登录页；也可以直接双击 Connect-Codex.bat。登录信息由 Codex 管理，本程序不读取或复制登录令牌。</p>
+        <p>使用 Codex 当前默认可用模型，不保证是 GPT-5.1。受订阅额度、网络及联网工具权限限制；不会自动改用付费 API。当天最多 8 次联网任务，备选替换不新增调用。</p>
+        <p id="codex-usage">今日联网任务 0 / 8；剩余订阅额度需在 Codex 中查看。</p>
+      </div>
+      <div id="api-config" hidden>
+      <div class="account-callout">ChatGPT Plus / Pro 订阅不能直接用于本程序。需要在 OpenAI API 平台单独创建密钥并开通 API 计费。</div>
+      <div class="account-links"><a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">创建 API key ↗</a><a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" rel="noopener noreferrer">查看 API 计费 ↗</a><a href="https://openai.com/api/pricing/" target="_blank" rel="noopener noreferrer">查看官方价格 ↗</a></div>
+      <p id="openai-state" class="connection-state">正在检查配置…</p>
+      <form id="account-form" class="account-form" autocomplete="off">
+        <label>OpenAI API key<input id="openai-key" type="password" autocomplete="new-password" maxlength="512" placeholder="仅在本机填写；已配置时留空保留原密钥"></label>
+        <label>每次联网请求预留金额（人民币）<input id="gpt-cost" type="number" min="0.0001" max="30" step="any" required placeholder="依据实际报价填写，包含 token、搜索和汇率"></label>
+        <p>每次联网最多 3 次搜索调用、最多 5000 输出 token。预留金额不是官方报价或实际扣款；配置偏低不能保证实际费用不超预算。</p>
+        <div class="account-actions"><button class="primary" type="submit">保存本机配置</button><button class="secondary" type="button" id="check-openai">检查 API 连接</button><button class="secondary" type="button" id="clear-openai">移除本机密钥</button></div>
+      </form>
+      <p class="privacy-note">Windows 下使用当前用户的系统加密保护密钥；不会回显或写入 Excel。不要将密钥发送到聊天中。换电脑后需要重新配置。</p>
+      </div>
+      <div class="settings-note"><strong>订阅额度与付费接口分开</strong><p>Codex 方式使用你的订阅额度，本程序不主动购买加量额度。¥30 本地预留额度仅用于 API 和其他付费接口，不能衡量或限制 Codex 的订阅用量。若你启用了订阅之外的付费加量，计费受你的账户设置控制。</p><p>每天北京时间 9 点生成并在本地保存 Excel：data/reports/real/日期.xlsx。关闭电脑、休眠或退出程序后无法执行；下次启动时补做当天任务。</p></div>
+      <details class="optional-sources"><summary>原有关键词查询的数据源（可选，独立于 GPT 每日精选）</summary><div id="source-details"></div></details>
+    </section>
     <section id="results-panel" class="results-panel">
-      <div class="section-heading"><div><h2 id="results-title">今日素材雷达 <span class="badge">LIVE</span></h2><p id="coverage">正在读取本地记录…</p></div><div class="actions"><button id="collect-button" class="secondary">↻ 采集今日榜单</button><button id="export-button" class="primary">↓ 导出 Excel</button></div></div>
-      <div class="toolbar"><div class="tabs" role="group" aria-label="平台筛选"><button class="selected" data-platform="all">全部平台</button><button data-platform="douyin">抖音</button><button data-platform="xiaohongshu">小红书</button></div><label class="filter-label"><input type="checkbox" id="repeat-filter">仅看持续出现</label><span id="result-count">0 条素材</span></div>
+      <div class="section-heading"><div><h2 id="results-title">今日精选 9 条 <span class="badge">LIVE</span></h2><p id="coverage">正在读取本地记录…</p></div><div class="actions"><button id="collect-button" class="secondary">✦ 生成今日精选</button><button id="export-button" class="primary">↓ 导出 Excel</button></div></div>
+      <div class="toolbar"><div class="tabs" role="group" aria-label="平台筛选"><button class="selected" data-platform="all">全部分类</button><button data-platform="douyin">抖音 · 4</button><button data-platform="xiaohongshu">小红书 · 3</button><button data-platform="news">大众事件 · 2</button></div><span id="result-count">0 条素材</span></div>
       <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
       <div id="table-wrap" class="table-wrap"><table><thead><tr><th class="number">序号</th><th>热点 & 内容</th><th>来源</th><th>筛选依据</th><th>开头灵感</th><th>线索</th></tr></thead><tbody id="results"></tbody></table></div>
-      <div id="empty" class="empty" hidden><span>⌕</span><h3>好素材，从第一条线索开始</h3><p id="empty-text">尚无榜单记录。可开启示例体验，或接入数据源后采集。</p><button class="secondary" id="try-demo">体验示例流程 →</button></div>
-      <div class="table-footer"><span>开头灵感为规则模板，使用前请核实事实与语境。</span><span id="updated">等待更新</span></div>
+      <div id="empty" class="empty" hidden><span>⌕</span><h3>好素材，从第一条线索开始</h3><p id="empty-text">配置账户后生成今日精选，或先体验示例。</p><button class="secondary" id="try-demo">体验示例流程 →</button><button class="secondary" id="configure-account">配置 OpenAI 账户 →</button></div>
+      <div class="table-footer"><span>导出包含当前最终入选内容；换一条后自动更新。开头建议需核实。</span><span id="updated">等待更新</span></div>
     </section>
     <footer class="page-footer"><span>少一点信息噪音，多一点创作线索。</span><span>热点素材台 / 为内容创作者准备</span></footer>
   </div>

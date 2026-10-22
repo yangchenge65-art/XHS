@@ -17,7 +17,7 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def get_json(url, key='', body=None):
+def get_json(url, key='', body=None, timeout=20):
     headers = {'Accept': 'application/json', 'User-Agent': 'Hotdesk/0.1'}
     if key:
         headers['Authorization'] = 'Bearer ' + key
@@ -26,7 +26,7 @@ def get_json(url, key='', body=None):
         payload = json.dumps(body).encode()
         headers['Content-Type'] = 'application/json'
     try:
-        with build_opener(NoRedirect()).open(Request(url, data=payload, headers=headers), timeout=20) as response:
+        with build_opener(NoRedirect()).open(Request(url, data=payload, headers=headers), timeout=timeout) as response:
             raw = response.read(5_000_001)
         if len(raw) > 5_000_000:
             raise SourceError('数据源响应过大，请缩小结果范围')
